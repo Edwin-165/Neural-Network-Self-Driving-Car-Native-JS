@@ -2,7 +2,27 @@ body{
     margin: 0;
     text-align: center;
     background-color: darkgray;
-    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#verticalButtons{
+    display: flex;
+    flex-direction: column;
+}
+
+button{
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 5px 7px 5px;
+    margin: 2px 10px;
+    cursor: pointer;
+}
+
+button:hover{
+    background: blue;
 }
 
 #myCanvas{

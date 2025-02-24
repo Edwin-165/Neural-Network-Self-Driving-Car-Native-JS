@@ -5,11 +5,39 @@ canvas.width = 200
 const ctx = canvas.getContext('2d')
 const road = new Road(canvas.width/2, canvas.width*0.9)
 
-const N = 1000
+const N = 100 // Deployed Cars
 const cars = genereateCars(N)
+let bestCar = cars[0]
+
+if(localStorage.getItem('bestBrain')) {
+    for(let i = 0; i < cars.length; i++) {
+        cars[i].brain = JSON.parse(
+            localStorage.getItem("bestBrain")
+        )
+        if(i != 0) {
+            NeuralNetwork.mutate(cars[i].brain, 0.25)
+        }
+    }
+    
+}
+
+function save() {
+    localStorage.setItem("bestBrain",
+        JSON.stringify(bestCar.brain)
+    )
+}
+
+function discard(){
+    localStorage.removeItem("bestBrain")
+}
 
 const traffic = [
-    new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 1)
+    new Car(road.getLaneCenter(1), -100, 30, 50, "DUMMY", 1),
+    new Car(road.getLaneCenter(0), -200, 30, 50, "DUMMY", 1),
+    new Car(road.getLaneCenter(2), -500, 30, 50, "DUMMY", 1),
+    new Car(road.getLaneCenter(1), -700, 30, 50, "DUMMY", 1),
+    new Car(road.getLaneCenter(1), -800, 30, 50, "DUMMY", 1),
+    new Car(road.getLaneCenter(0), -900, 30, 50, "DUMMY", 1)
 ]
 
 function genereateCars(N) {
@@ -33,9 +61,16 @@ function animate() {
     }
     canvas.height = window.innerHeight
 
+    bestCar = cars.find(
+        c=>c.y === Math.min(
+            ...cars.map(c=>c.y)
+        )
+    )
+
     ctx.save()
-    ctx.translate(0, -cars[0].y + canvas.height * 0.7)
+    ctx.translate(0, -bestCar.y + canvas.height * 0.7)
     road.draw(ctx)
+
     for(let i =0; i < traffic.length; i++) {
         traffic[i].draw(ctx, "red")
     }
@@ -45,7 +80,7 @@ function animate() {
         cars[i].draw(ctx, "blue")
     }
     ctx.globalAlpha = 1
-    cars[0].draw(ctx, "blue", true)
+    bestCar.draw(ctx, "blue", true)
     ctx.restore()
 
     requestAnimationFrame(animate)
